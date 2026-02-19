@@ -31,14 +31,17 @@ def check_term(
 
     match term:
         case Let(bindings=bindings, body=body):
+            # duplicate names in let bindings are not allowed
             counts = Counter(name for name, _ in bindings)
             duplicates = {name: count for name, count in counts.items() if count > 1}
             if duplicates:
-                raise ValueError(f"duplicate binders: {duplicates}")
+                raise ValueError(f"Duplicate binders in Let: {duplicates}")
 
+            # check each binding value in the current context (recursive definitions not allowed)
             for _, value in bindings:
                 recur(value)
 
+            # extend context and check the body last so that bound names are available
             local = dict.fromkeys([name for name, _ in bindings])
             recur(body, context={**context, **local})
 
@@ -46,7 +49,11 @@ def check_term(
             counts = Counter(name for name, _ in bindings)
             duplicates = {name: count for name, count in counts.items() if count > 1}
             if duplicates:
-                raise ValueError(f"duplicate binders: {duplicates}")
+                raise ValueError(f"Duplicate binders in LetRec: {duplicates}")
+
+            for name, value in bindings:
+                if not isinstance(value, Abstract):
+                    raise ValueError("LetRec binding must be an Abstract (function) to be recursive")
 
             local = dict.fromkeys([name for name, _ in bindings])
 
@@ -61,11 +68,11 @@ def check_term(
 
         case Abstract(parameters=parameters, body=body):
             counts = Counter(parameters)
-            duplicates = {name for name, count in counts.items() if count > 1}
-            if duplicates:
-                raise ValueError(f"duplicate parameters: {duplicates}")
+            dups = {name for name, count in counts.items() if count > 1}
+            if dups:
+                raise ValueError(f"Duplicate parameters in Abstract: {dups}")
 
-            local = dict.fromkeys(parameters, None)
+            local = {parameter: None for parameter in parameters}
             recur(body, context={**context, **local})
 
         case Apply(target=target, arguments=arguments):
@@ -73,7 +80,7 @@ def check_term(
             for argument in arguments:
                 recur(argument)
 
-        case Immediate(value=_value):
+        case Immediate(value=value):
             pass
 
         case Primitive(operator=_operator, left=left, right=right):
@@ -110,7 +117,7 @@ def check_program(
             counts = Counter(parameters)
             duplicates = {name for name, count in counts.items() if count > 1}
             if duplicates:
-                raise ValueError(f"duplicate parameters: {duplicates}")
+                raise ValueError(f"Duplicate parameters in program: {duplicates}")
 
             local = dict.fromkeys(parameters, None)
             check_term(body, context=local)
