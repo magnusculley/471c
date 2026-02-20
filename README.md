@@ -12,4 +12,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 ![license](https://img.shields.io/badge/license-MIT-green.svg)
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-u
