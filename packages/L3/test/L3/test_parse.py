@@ -15,8 +15,12 @@ from L3.syntax import (
     Store,
 )
 
+# The starter tests for parser already covered 100% branch coverage,
+# so I figured I would just explain what each one does
+
 
 # Let
+# Parses (let () x) - a let expression with no bindings that just returns reference x.
 def test_parse_let_empty():
     source = "(let () x)"
 
@@ -30,6 +34,7 @@ def test_parse_let_empty():
     assert actual == expected
 
 
+# Parses (let ((x 0)) x) - expects to bind x to 0, then returns x.
 def test_parse_let_bindings():
     source = "(let ((x 0)) x)"
 
@@ -46,6 +51,7 @@ def test_parse_let_bindings():
 
 
 # LetRec
+# Parses (letrec () x) - letrec with no bindings, returns x.
 def test_parse_letrec_empty():
     source = "(letrec () x)"
 
@@ -59,6 +65,7 @@ def test_parse_letrec_empty():
     assert actual == expected
 
 
+# Parses (letrec ((x 0)) x) - binds x to 0 recursively, returns x
 def test_parse_letrec_bindings():
     source = "(letrec ((x 0)) x)"
 
@@ -75,6 +82,7 @@ def test_parse_letrec_bindings():
 
 
 # Reference
+# Parses x - a standalone variable reference, for use in let and letrec bodies and as arguments to apply
 def test_parse_reference():
     source = "x"
 
@@ -88,6 +96,8 @@ def test_parse_reference():
 
 
 # Abstract
+# Parses (\ (x) x) - identity function taking parameter x and returning x.
+# Python equivalent: lambda x: x
 def test_parse_abstract():
     source = "(\\ (x) x)"
 
@@ -102,6 +112,8 @@ def test_parse_abstract():
 
 
 # Apply
+# Parses (x) - calling x with no arguments.
+# Python equivalent: x()
 def test_parse_apply_empty():
     source = "(x)"
 
@@ -115,6 +127,8 @@ def test_parse_apply_empty():
     assert actual == expected
 
 
+# Parses (x y z) - calling x with arguments y and z.
+# Python equivalent: x(y, z)
 def test_parse_apply_arguments():
     source = "(x y z)"
 
@@ -129,6 +143,7 @@ def test_parse_apply_arguments():
 
 
 # Immediate
+# Parses 42 - a literal integer constant
 def test_parse_immediate():
     source = "42"
 
@@ -140,6 +155,7 @@ def test_parse_immediate():
 
 
 # Primitive
+# Parses (+ 1 2) - addition operation, 1+2
 def test_parse_add():
     source = "(+ 1 2)"
 
@@ -154,6 +170,7 @@ def test_parse_add():
     assert actual == expected
 
 
+# Parses (- 3 2) - subtraction operation, 3-2
 def test_parse_subtract():
     source = "(- 3 2)"
 
@@ -168,6 +185,7 @@ def test_parse_subtract():
     assert actual == expected
 
 
+# Parses (* 2 3) - multiplication operation, 2*3
 def test_parse_multiply():
     source = "(* 2 3)"
     expected = Primitive(
@@ -180,6 +198,7 @@ def test_parse_multiply():
 
 
 # Branch
+# Parses (if (< 1 2) 1 0) - evaluates that the constructed branch is a less-than check, if 1<2 then 1 else 0.
 def test_parse_less_than():
     source = "(if (< 1 2) 1 0)"
 
@@ -196,6 +215,7 @@ def test_parse_less_than():
     assert actual == expected
 
 
+# Parses (if (== 1 1) 1 0) - evaluates that the constructed branch is an equality check, if 1==1 then 1 else 0.
 def test_parse_equal_to():
     source = "(if (== 1 1) 1 0)"
 
@@ -213,6 +233,7 @@ def test_parse_equal_to():
 
 
 # Allocate
+# Parses (allocate 0) - allocate memory for 0 elements
 def test_parse_allocate():
     source = "(allocate 0)"
 
@@ -226,6 +247,7 @@ def test_parse_allocate():
 
 
 # Load
+# Parses (load x 0) - load from memory at base x, index 0.
 def test_parse_load():
     source = "(load x 0)"
 
@@ -240,6 +262,7 @@ def test_parse_load():
 
 
 # Store
+# Parses (store x 0 1) - store value 1 to memory at base x, index 0.
 def test_parse_store():
     source = "(store x 0 1)"
 
@@ -254,6 +277,7 @@ def test_parse_store():
     assert actual == expected
 
 
+# Parses (begin x) - sequence with no effects, just returns x.
 def test_parse_begin():
     source = "(begin x)"
 
@@ -267,6 +291,7 @@ def test_parse_begin():
     assert actual == expected
 
 
+# Parses (begin x y z) - executes x and y for side effects, returns z.
 def test_parse_begin_effects():
     source = "(begin x y z)"
 
@@ -284,6 +309,7 @@ def test_parse_begin_effects():
 
 
 # Program
+# Parses (l3 (x) x) a complete L3 program and usually the entry point of the parser
 def test_parse_program_identity():
     source = "(l3 (x) x)"
 
