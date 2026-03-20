@@ -48,9 +48,3 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          
-      - name: Upload test results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: reports/test.xml
-          report_type: test_results
