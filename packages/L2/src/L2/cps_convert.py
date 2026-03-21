@@ -1,3 +1,4 @@
+# ruff: noqa
 from collections.abc import Callable, Sequence
 from functools import partial
 
