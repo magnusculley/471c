@@ -1,10 +1,7 @@
-import pytest
 from L1 import syntax as L1
 from L2 import syntax as L2
 from L2.cps_convert import cps_convert_program, cps_convert_term
 from util.sequential_name_generator import SequentialNameGenerator
-
-pytest.skip("Skipping this file for now", allow_module_level=True)
 
 
 def k(v: L1.Identifier) -> L1.Statement:
